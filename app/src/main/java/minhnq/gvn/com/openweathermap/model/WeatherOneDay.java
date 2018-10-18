@@ -16,6 +16,9 @@ public class WeatherOneDay {
     @Expose
     public List<Weather> weather;
 
+    @SerializedName("dt")
+    public long dt;
+
     @SerializedName("main")
     @Expose
     public Main main;

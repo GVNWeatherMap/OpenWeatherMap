@@ -11,8 +11,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import minhnq.gvn.com.openweathermap.R;
 import minhnq.gvn.com.openweathermap.model.WeatherFiveDay;
@@ -42,9 +45,17 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         WeatherOneDay weatherOneDay = mOneDayList.get(i);
-        viewHolder.tvDay.setText(weatherOneDay.dt_txt);
-        viewHolder.tvMinTemp.setText(String.valueOf(weatherOneDay.main.temp_min));
-        viewHolder.tvMaxTemp.setText(String.valueOf(weatherOneDay.main.temp_max));
+        long unixTime = weatherOneDay.dt;
+        Date date = new Date(unixTime*1000L);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String day = simpleDateFormat.format(date);
+
+        viewHolder.tvDay.setText(day);
+
+        int  temp_min = (int) Math.round(weatherOneDay.main.temp_min);
+        int  temp_max = (int) Math.round(weatherOneDay.main.temp_max);
+        viewHolder.tvMinTemp.setText(String.valueOf(temp_min));
+        viewHolder.tvMaxTemp.setText(String.valueOf(temp_max));
         Glide.with(mContext).load("http://openweathermap.org/img/w/"+ weatherOneDay.weather.get(0).icon +".png").into(viewHolder.imgIcon);
     }
 
