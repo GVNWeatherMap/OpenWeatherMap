@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        getWeatherWeekDay();
+        getWeatherFiveDay();
         getWeatherOneDay();
 
     }
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void getWeatherWeekDay() {
+    private void getWeatherFiveDay() {
         APIUtils.getAPIService().getWeatherFiveDay().enqueue(new Callback<WeatherFiveDay>() {
             @Override
             public void onResponse(Call<WeatherFiveDay> call, Response<WeatherFiveDay> response) {

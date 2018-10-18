@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class Main {
     @SerializedName("temp")
     @Expose
-    public int temp;
+    public double temp;
 
     @SerializedName("temp_min")
     @Expose
