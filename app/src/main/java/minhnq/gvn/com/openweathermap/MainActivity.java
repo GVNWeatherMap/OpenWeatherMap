@@ -6,7 +6,6 @@ import android.util.Log;
 
 import java.util.List;
 
-import minhnq.gvn.com.openweathermap.model.RetroPhoto;
 import minhnq.gvn.com.openweathermap.utils.APIUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
