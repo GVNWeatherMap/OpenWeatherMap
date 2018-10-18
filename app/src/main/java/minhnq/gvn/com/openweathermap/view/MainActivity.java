@@ -37,12 +37,7 @@ public class MainActivity extends AppCompatActivity {
         getWeatherFiveDay();
         getWeatherOneDay();
 
-        mAdapter = new WeatherAdapter(this);
-        mAdapter.setDatas(listOneDay);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        rvFiveDay.setLayoutManager(layoutManager);
-        rvFiveDay.setAdapter(mAdapter);
+
     }
 
     private void initView() {
@@ -79,14 +74,19 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     weatherFiveDay = response.body();
                     listOneDay = weatherFiveDay.list;
-                    Log.d(TAG, "onResponse: " + response.body());
+
+                    mAdapter = new WeatherAdapter(MainActivity.this);
+                    mAdapter.setDatas(listOneDay);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                    rvFiveDay.setLayoutManager(layoutManager);
+                    rvFiveDay.setAdapter(mAdapter);
                 }
             }
 
             @Override
             public void onFailure(Call<WeatherFiveDay> call, Throwable t) {
                 Log.i("onFailure", t.getMessage());
-
             }
         });
     }
