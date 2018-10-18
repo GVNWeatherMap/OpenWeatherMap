@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_main_city_name">45sp</dimen>
+    <dimen name="text_main_status">25sp</dimen>
+    <dimen name="text_main_current_temp">80sp</dimen>
+
+</resources>
