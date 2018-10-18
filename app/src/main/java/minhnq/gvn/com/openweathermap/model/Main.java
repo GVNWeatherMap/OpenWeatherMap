@@ -3,10 +3,10 @@ package minhnq.gvn.com.openweathermap.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-class Main {
+public class Main {
     @SerializedName("temp")
     @Expose
-    public double temp;
+    public int temp;
 
     @SerializedName("temp_min")
     @Expose

@@ -3,7 +3,8 @@ package minhnq.gvn.com.openweathermap.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-class Weather {
+public class Weather {
+
     @SerializedName("id")
     @Expose
     public int id;
@@ -19,4 +20,6 @@ class Weather {
     @SerializedName("icon")
     @Expose
     public String icon ;
+
 }
+
