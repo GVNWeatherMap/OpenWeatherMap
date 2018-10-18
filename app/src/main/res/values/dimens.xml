@@ -3,5 +3,6 @@
     <dimen name="text_main_city_name">45sp</dimen>
     <dimen name="text_main_status">25sp</dimen>
     <dimen name="text_main_current_temp">80sp</dimen>
+    <dimen name="text_main_day">25sp</dimen>
 
 </resources>
