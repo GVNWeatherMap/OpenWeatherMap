@@ -2,11 +2,18 @@ package minhnq.gvn.com.openweathermap.view;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import minhnq.gvn.com.openweathermap.R;
+import minhnq.gvn.com.openweathermap.adapter.WeatherAdapter;
 import minhnq.gvn.com.openweathermap.model.WeatherFiveDay;
+import minhnq.gvn.com.openweathermap.model.WeatherOneDay;
 import minhnq.gvn.com.openweathermap.model.Weathers;
 import minhnq.gvn.com.openweathermap.utils.APIUtils;
 import retrofit2.Call;
@@ -18,7 +25,9 @@ public class MainActivity extends AppCompatActivity {
     private Weathers weather = new Weathers();
     private WeatherFiveDay weatherFiveDay = new WeatherFiveDay();
     private TextView tvCityName, tvStatus, tvTemp;
-
+    private RecyclerView rvFiveDay;
+    private List<WeatherOneDay> listOneDay = new ArrayList<>();
+    private WeatherAdapter mAdapter ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +37,20 @@ public class MainActivity extends AppCompatActivity {
         getWeatherFiveDay();
         getWeatherOneDay();
 
+        mAdapter = new WeatherAdapter(this);
+        mAdapter.setDatas(listOneDay);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        rvFiveDay.setLayoutManager(layoutManager);
+        rvFiveDay.setAdapter(mAdapter);
     }
 
     private void initView() {
         tvCityName = findViewById(R.id.txv_main_city_name);
         tvStatus = findViewById(R.id.txv_main_status);
         tvTemp = findViewById(R.id.txv_main_current_temp);
+        rvFiveDay = findViewById(R.id.rv_main_weather_week);
+
     }
 
     private void getWeatherOneDay() {
@@ -61,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<WeatherFiveDay> call, Response<WeatherFiveDay> response) {
                 if (response.isSuccessful()) {
                     weatherFiveDay = response.body();
+                    listOneDay = weatherFiveDay.list;
                     Log.d(TAG, "onResponse: " + response.body());
                 }
             }
