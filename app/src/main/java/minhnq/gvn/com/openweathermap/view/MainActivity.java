@@ -4,18 +4,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Looper;
-
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.widget.TextView;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -26,13 +19,13 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import minhnq.gvn.com.openweathermap.R;
 import minhnq.gvn.com.openweathermap.adapter.WeatherAdapter;
-import minhnq.gvn.com.openweathermap.model.Main;
 import minhnq.gvn.com.openweathermap.model.WeatherFiveDay;
 import minhnq.gvn.com.openweathermap.model.WeatherOneDay;
 import minhnq.gvn.com.openweathermap.model.Weathers;
@@ -42,7 +35,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "TAG";
     private Weathers weather = new Weathers();
     private WeatherFiveDay weatherFiveDay = new WeatherFiveDay();
@@ -53,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private FusedLocationProviderClient fusedLocationProviderClient;
-
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         requestPermission();
         initView();
+        setAction();
         getWeatherFiveDay();
         getWeatherOneDay();
     }
@@ -94,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private void buildLocationCallback() {
         locationCallback = new LocationCallback() {
             @Override
@@ -119,7 +114,12 @@ public class MainActivity extends AppCompatActivity {
         tvStatus = findViewById(R.id.txv_main_status);
         tvTemp = findViewById(R.id.txv_main_current_temp);
         rvFiveDay = findViewById(R.id.rv_main_weather_week);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
 
+    }
+
+    private void setAction(){
+        swipeRefreshLayout.setOnRefreshListener(this);
     }
 
     private void getWeatherOneDay() {
@@ -155,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                     rvFiveDay.setLayoutManager(layoutManager);
                     rvFiveDay.setAdapter(mAdapter);
+                    swipeRefreshLayout.setRefreshing(false);
                     Log.d(TAG, "onResponse: " + response.body());
                 }
             }
@@ -167,5 +168,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onRefresh() {
+        getWeatherOneDay();
+        getWeatherFiveDay();
+    }
 }
 

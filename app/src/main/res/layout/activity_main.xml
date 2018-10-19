@@ -8,7 +8,10 @@
     android:orientation="vertical"
     android:weightSum="10"
     tools:context=".view.MainActivity">
-
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/swipe_refresh-layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -51,4 +54,5 @@
         android:layout_weight="5">
 
     </androidx.recyclerview.widget.RecyclerView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>
