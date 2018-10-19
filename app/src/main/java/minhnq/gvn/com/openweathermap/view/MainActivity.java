@@ -32,6 +32,7 @@ import java.util.List;
 
 import minhnq.gvn.com.openweathermap.R;
 import minhnq.gvn.com.openweathermap.adapter.WeatherAdapter;
+import minhnq.gvn.com.openweathermap.model.Main;
 import minhnq.gvn.com.openweathermap.model.WeatherFiveDay;
 import minhnq.gvn.com.openweathermap.model.WeatherOneDay;
 import minhnq.gvn.com.openweathermap.model.Weathers;
@@ -148,19 +149,20 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     weatherFiveDay = response.body();
                     listOneDay = weatherFiveDay.list;
-
                     mAdapter = new WeatherAdapter(MainActivity.this);
                     mAdapter.setDatas(listOneDay);
                     LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
                     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                     rvFiveDay.setLayoutManager(layoutManager);
                     rvFiveDay.setAdapter(mAdapter);
+                    Log.d(TAG, "onResponse: " + response.body());
                 }
             }
 
             @Override
             public void onFailure(Call<WeatherFiveDay> call, Throwable t) {
                 Log.i("onFailure", t.getMessage());
+
             }
         });
     }
