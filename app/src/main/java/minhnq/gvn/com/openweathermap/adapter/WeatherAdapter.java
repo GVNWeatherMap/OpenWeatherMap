@@ -45,10 +45,10 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
         WeatherOneDay weatherOneDay = mOneDayList.get(i);
         long unixTime = weatherOneDay.dt;
         Date date = new Date(unixTime*1000L);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         String day = simpleDateFormat.format(date);
 
-        viewHolder.tvDay.setText(weatherOneDay.dt_txt);
+        viewHolder.tvDay.setText(day);
 
         int  temp_min = (int) Math.round(weatherOneDay.main.temp_min);
         int  temp_max = (int) Math.round(weatherOneDay.main.temp_max);

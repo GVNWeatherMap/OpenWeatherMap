@@ -3,24 +3,37 @@ package minhnq.gvn.com.openweathermap.view;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Looper;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.navigation.NavigationView;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -47,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private LocationCallback locationCallback;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +70,19 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         setContentView(R.layout.activity_main);
         requestPermission();
         initView();
+        setUpToolbar();
         setAction();
         getWeatherFiveDay();
         getWeatherOneDay();
+    }
+
+    private void setUpToolbar() {
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setTitle("Weather   ");
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     private void requestPermission() {
@@ -95,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
                 Common.current_location = locationResult.getLastLocation();
-
                 Log.d(TAG, "onLocationResult: " + locationResult.getLastLocation().getLatitude() + "/" + locationResult.getLastLocation().getLongitude());
             }
         };
@@ -114,11 +139,34 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         tvStatus = findViewById(R.id.txv_main_status);
         tvTemp = findViewById(R.id.txv_main_current_temp);
         rvFiveDay = findViewById(R.id.rv_main_weather_week);
+        toolbar = findViewById(R.id.toolBar);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        navigationView = findViewById(R.id.nav_view);
+        drawerLayout = findViewById(R.id.drawer_layout);
 
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                menuItem.setChecked(true);
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
     }
 
-    private void setAction(){
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setAction() {
         swipeRefreshLayout.setOnRefreshListener(this);
     }
 
