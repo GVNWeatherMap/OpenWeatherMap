@@ -39,16 +39,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import minhnq.gvn.com.openweathermap.R;
 import minhnq.gvn.com.openweathermap.adapter.WeatherAdapter;
+import minhnq.gvn.com.openweathermap.constract.MainContract;
+import minhnq.gvn.com.openweathermap.model.Weather;
 import minhnq.gvn.com.openweathermap.model.WeatherFiveDay;
 import minhnq.gvn.com.openweathermap.model.WeatherOneDay;
 import minhnq.gvn.com.openweathermap.model.Weathers;
+import minhnq.gvn.com.openweathermap.presenter.MainPresenter;
 import minhnq.gvn.com.openweathermap.utils.APIUtils;
 import minhnq.gvn.com.openweathermap.utils.Common;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends BaseActivity<MainContract.IMainPresenter> implements SwipeRefreshLayout.OnRefreshListener, MainContract.IMainView {
     private static final String TAG = "TAG";
     private Weathers weather = new Weathers();
     private WeatherFiveDay weatherFiveDay = new WeatherFiveDay();
@@ -67,13 +70,32 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        requestPermission();
         initView();
         setUpToolbar();
         setAction();
+
+        requestPermission();
+
         getWeatherFiveDay();
-        getWeatherOneDay();
+//        getWeatherOneDay();
+
+    }
+
+    @Override
+    protected MainContract.IMainPresenter getPresenter() {
+        return new MainPresenter(this);
+    }
+
+    @Override
+    public void onResponse(Weathers weather) {
+        tvCityName.setText(weather.name);
+        tvStatus.setText(weather.weather.get(0).main);
+        tvTemp.setText(String.valueOf(weather.main.temp) + "°C");
+    }
+
+    @Override
+    int getIdLayout() {
+        return R.layout.activity_main;
     }
 
     private void setUpToolbar() {
@@ -108,20 +130,20 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
                     @Override
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-
+                        Log.d(TAG, "onPermissionRationaleShouldBeShown: ");
                     }
                 }).check();
-
     }
-
 
     private void buildLocationCallback() {
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                Common.current_location = locationResult.getLastLocation();
-                Log.d(TAG, "onLocationResult: " + locationResult.getLastLocation().getLatitude() + "/" + locationResult.getLastLocation().getLongitude());
+                double lat = locationResult.getLastLocation().getLatitude();
+                double lon = locationResult.getLastLocation().getLongitude();
+                getWeatherOneDay(lat, lon);
+//                Log.d(TAG, "onLocationResult: " + locationResult.getLastLocation().getLatitude() + "/" + locationResult.getLastLocation().getLongitude());
             }
         };
     }
@@ -170,23 +192,44 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         swipeRefreshLayout.setOnRefreshListener(this);
     }
 
-    private void getWeatherOneDay() {
-        APIUtils.getAPIService().getWeatherDay().enqueue(new Callback<Weathers>() {
-            @Override
-            public void onResponse(Call<Weathers> call, Response<Weathers> response) {
-                if (response.isSuccessful()) {
-                    weather = response.body();
-                    tvCityName.setText(weather.name);
-                    tvStatus.setText(weather.weather.get(0).main);
-                    tvTemp.setText(String.valueOf(weather.main.temp) + "°C");
-                }
-            }
+    private void getWeatherOneDay(double lat, double lon) {
+        presenter.getWeatherNow(String.valueOf(lat),
+                String.valueOf(lon),
+                Common.APP_ID, "metric");
+        swipeRefreshLayout.setRefreshing(false);
 
-            @Override
-            public void onFailure(Call<Weathers> call, Throwable t) {
-                Log.i("onFailure", t.getMessage());
-            }
-        });
+//        APIUtils.getAPIService().getWeatherByLatLng().enqueue(new Callback<Weathers>() {
+//            @Override
+//            public void onResponse(Call<Weathers> call, Response<Weathers> response) {
+//                if (response.isSuccessful()) {
+//                    weather = response.body();
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Weathers> call, Throwable t) {
+//                Log.i("onFailure", t.getMessage());
+//            }
+//        });
+
+
+//        APIUtils.getAPIService().getWeatherDay().enqueue(new Callback<Weathers>() {
+//            @Override
+//            public void onResponse(Call<Weathers> call, Response<Weathers> response) {
+//                if (response.isSuccessful()) {
+//                    weather = response.body();
+//                    tvCityName.setText(weather.name);
+//                    tvStatus.setText(weather.weather.get(0).main);
+//                    tvTemp.setText(String.valueOf(weather.main.temp) + "°C");
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Weathers> call, Throwable t) {
+//                Log.i("onFailure", t.getMessage());
+//            }
+//        });
     }
 
     private void getWeatherFiveDay() {
@@ -218,8 +261,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        getWeatherOneDay();
-        getWeatherFiveDay();
+//        getWeatherOneDay();
+        requestPermission();
     }
 }
 
