@@ -1,5 +1,6 @@
 package minhnq.gvn.com.openweathermap.view;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "TAG";
     private Weathers weather = new Weathers();
     private WeatherFiveDay weatherFiveDay = new WeatherFiveDay();
@@ -29,12 +30,14 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvFiveDay;
     private List<WeatherOneDay> listOneDay = new ArrayList<>();
     private WeatherAdapter mAdapter ;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+        setAction();
         getWeatherFiveDay();
         getWeatherOneDay();
 
@@ -46,7 +49,12 @@ public class MainActivity extends AppCompatActivity {
         tvStatus = findViewById(R.id.txv_main_status);
         tvTemp = findViewById(R.id.txv_main_current_temp);
         rvFiveDay = findViewById(R.id.rv_main_weather_week);
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
 
+    }
+
+    private void setAction(){
+        swipeRefreshLayout.setOnRefreshListener(this);
     }
 
     private void getWeatherOneDay() {
@@ -58,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     tvCityName.setText(weather.name);
                     tvStatus.setText(weather.weather.get(0).main);
                     tvTemp.setText(String.valueOf(weather.main.temp) + "°C");
+
                 }
             }
 
@@ -81,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                     rvFiveDay.setLayoutManager(layoutManager);
                     rvFiveDay.setAdapter(mAdapter);
+                    swipeRefreshLayout.setRefreshing(false);
                     Log.d(TAG, "onResponse: " + response.body());
                 }
             }
@@ -93,5 +103,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onRefresh() {
+        getWeatherOneDay();
+        getWeatherFiveDay();
+    }
 }
 

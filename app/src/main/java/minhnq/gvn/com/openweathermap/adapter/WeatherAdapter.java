@@ -50,7 +50,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String day = simpleDateFormat.format(date);
 
-        viewHolder.tvDay.setText(day);
+        viewHolder.tvDay.setText(weatherOneDay.dt_txt);
 
         int  temp_min = (int) Math.round(weatherOneDay.main.temp_min);
         int  temp_max = (int) Math.round(weatherOneDay.main.temp_max);
