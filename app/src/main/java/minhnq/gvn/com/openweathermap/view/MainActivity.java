@@ -1,11 +1,18 @@
 package minhnq.gvn.com.openweathermap.view;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -29,9 +36,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private TextView tvCityName, tvStatus, tvTemp;
     private RecyclerView rvFiveDay;
     private List<WeatherOneDay> listOneDay = new ArrayList<>();
-    private WeatherAdapter mAdapter ;
+    private WeatherAdapter mAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
-
+    private NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +60,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     }
 
-    private void setAction(){
+    public void sendNotification() {
+                NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.icon_notify)
+                        .setContentTitle("Weather Day")
+                        .setContentText("Test");
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(001, mBuilder.build());
+    }
+
+    private void setAction() {
         swipeRefreshLayout.setOnRefreshListener(this);
     }
 
@@ -67,6 +84,20 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     tvStatus.setText(weather.weather.get(0).main);
                     tvTemp.setText(String.valueOf(weather.main.temp) + "°C");
 
+                    Intent notifyIntent = new Intent(MainActivity.this, MainActivity.class);
+// Set the Activity to start in a new, empty task
+                    notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+// Create the PendingIntent
+                    PendingIntent notifyPendingIntent = PendingIntent.getActivity(
+                            MainActivity.this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    mBuilder.setSmallIcon(R.drawable.icon_notify)
+                            .setContentTitle("Weather Now")
+                            .setContentText(weather.name + ": " + weather.weather.get(0).main + " - " + String.valueOf(weather.main.temp) + "°C");
+                    mBuilder.setContentIntent(notifyPendingIntent);
+                    NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    mNotificationManager.notify(001, mBuilder.build());
                 }
             }
 
@@ -107,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public void onRefresh() {
         getWeatherOneDay();
         getWeatherFiveDay();
+//        sendNotification();
+
     }
 }
 
