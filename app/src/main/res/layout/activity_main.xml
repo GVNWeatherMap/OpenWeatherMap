@@ -8,51 +8,51 @@
     android:orientation="vertical"
     android:weightSum="10"
     tools:context=".view.MainActivity">
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-    android:id="@+id/swipe_refresh-layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh-layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/txv_main_city_name"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="city"
-            android:textColor="@color/text_main"
-            android:textSize="@dimen/text_main_city_name" />
+            android:layout_height="0dp"
+            android:layout_weight="5"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/txv_main_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textColor="@color/text_main"
-            android:text="Status"
-            android:textSize="@dimen/text_main_status"
-             />
-        <TextView
-            android:id="@+id/txv_main_current_temp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:textColor="@color/text_main"
-            android:text="0°"
-            android:textSize="@dimen/text_main_current_temp"
-            />
+            <TextView
+                android:id="@+id/txv_main_city_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="city"
+                android:textColor="@color/text_main"
+                android:textSize="@dimen/text_main_city_name" />
 
-    </LinearLayout>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_main_weather_week"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5">
+            <TextView
+                android:id="@+id/txv_main_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="Status"
+                android:textColor="@color/text_main"
+                android:textSize="@dimen/text_main_status" />
 
-    </androidx.recyclerview.widget.RecyclerView>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <TextView
+                android:id="@+id/txv_main_current_temp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="0°"
+                android:textColor="@color/text_main"
+                android:textSize="@dimen/text_main_current_temp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_main_weather_week"
+                android:layout_width="match_parent"
+                android:layout_marginTop="50dp"
+                android:layout_height="0dp"
+                android:layout_weight="5" />
+        </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>
