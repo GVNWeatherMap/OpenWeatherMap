@@ -40,32 +40,27 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import minhnq.gvn.com.openweathermap.R;
 import minhnq.gvn.com.openweathermap.adapter.WeatherAdapter;
 import minhnq.gvn.com.openweathermap.constract.MainContract;
-import minhnq.gvn.com.openweathermap.model.Weather;
 import minhnq.gvn.com.openweathermap.model.WeatherFiveDay;
 import minhnq.gvn.com.openweathermap.model.WeatherOneDay;
 import minhnq.gvn.com.openweathermap.model.Weathers;
 import minhnq.gvn.com.openweathermap.presenter.MainPresenter;
-import minhnq.gvn.com.openweathermap.utils.APIUtils;
 import minhnq.gvn.com.openweathermap.utils.Common;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+
 
 public class MainActivity extends BaseActivity<MainContract.IMainPresenter> implements SwipeRefreshLayout.OnRefreshListener, MainContract.IMainView {
     private static final String TAG = "TAG";
-    private Weathers weather = new Weathers();
-    private WeatherFiveDay weatherFiveDay = new WeatherFiveDay();
+    private static int COUNT_DAY = 5;
     private TextView tvCityName, tvStatus, tvTemp;
     private RecyclerView rvFiveDay;
-    private List<WeatherOneDay> listOneDay = new ArrayList<>();
-    private WeatherAdapter mAdapter;
+    private Toolbar toolbar;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private Toolbar toolbar;
+    private WeatherAdapter mAdapter;
+    private List<WeatherOneDay> listOneDay = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,12 +68,28 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
         initView();
         setUpToolbar();
         setAction();
-
         requestPermission();
+    }
 
-        getWeatherFiveDay();
-//        getWeatherOneDay();
+    @Override
+    public void onResponse(Weathers weather) {
+        tvCityName.setText(weather.name);
+        tvStatus.setText(weather.weather.get(0).main);
+        tvTemp.setText(String.valueOf(weather.main.temp) + "°C");
+        swipeRefreshLayout.setRefreshing(false);
 
+    }
+
+    @Override
+    public void onResponeFiveDay(WeatherFiveDay weatherFiveDay) {
+        mAdapter = new WeatherAdapter(MainActivity.this);
+        listOneDay = weatherFiveDay.list;
+        mAdapter.setDatas(listOneDay);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
+        rvFiveDay.setLayoutManager(layoutManager);
+        rvFiveDay.setAdapter(mAdapter);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -87,73 +98,25 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
     }
 
     @Override
-    public void onResponse(Weathers weather) {
-        tvCityName.setText(weather.name);
-        tvStatus.setText(weather.weather.get(0).main);
-        tvTemp.setText(String.valueOf(weather.main.temp) + "°C");
-    }
-
-    @Override
     int getIdLayout() {
         return R.layout.activity_main;
     }
 
-    private void setUpToolbar() {
-        setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitle("Weather   ");
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
-    private void requestPermission() {
-        Dexter.withActivity(this)
-                .withPermissions(Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                .withListener(new MultiplePermissionsListener() {
-                    @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()) {
-                            buildLocationRequest();
-                            buildLocationCallback();
-
-                            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                                    && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                                return;
-                            }
-                            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
-                            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-                        }
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                        Log.d(TAG, "onPermissionRationaleShouldBeShown: ");
-                    }
-                }).check();
-    }
-
-    private void buildLocationCallback() {
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                double lat = locationResult.getLastLocation().getLatitude();
-                double lon = locationResult.getLastLocation().getLongitude();
-                getWeatherOneDay(lat, lon);
-//                Log.d(TAG, "onLocationResult: " + locationResult.getLastLocation().getLatitude() + "/" + locationResult.getLastLocation().getLongitude());
-            }
-        };
-    }
-
-    private void buildLocationRequest() {
-        locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(3000);
-        locationRequest.setSmallestDisplacement(10.0f);
+    @Override
+    public void onRefresh() {
+        requestPermission();
     }
 
     private void initView() {
@@ -176,93 +139,82 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
         });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                drawerLayout.openDrawer(GravityCompat.START);
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
+    private void setUpToolbar() {
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setTitle("Weather");
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
-    private void setAction() {
-        swipeRefreshLayout.setOnRefreshListener(this);
+    private void requestPermission() {
+        Dexter.withActivity(this)
+                .withPermissions(Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if (report.areAllPermissionsGranted()) {
+                            buildLocationRequest();
+                            buildLocationCallback();
+
+                            if (ActivityCompat.checkSelfPermission(
+                                    MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                                    ActivityCompat.checkSelfPermission(
+                                            MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                return;
+                            }
+                            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+                            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                        Log.d(TAG, "onPermissionRationaleShouldBeShown: ");
+                    }
+                }).check();
+    }
+
+    private void buildLocationCallback() {
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                double lat = locationResult.getLastLocation().getLatitude();
+                double lon = locationResult.getLastLocation().getLongitude();
+                getWeatherOneDay(lat, lon);
+                getWeatherFiveDay(lat, lon);
+            }
+        };
+    }
+
+    private void buildLocationRequest() {
+        locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(3000);
+        locationRequest.setSmallestDisplacement(10.0f);
     }
 
     private void getWeatherOneDay(double lat, double lon) {
         presenter.getWeatherNow(String.valueOf(lat),
                 String.valueOf(lon),
                 Common.APP_ID, "metric");
-        swipeRefreshLayout.setRefreshing(false);
-
-//        APIUtils.getAPIService().getWeatherByLatLng().enqueue(new Callback<Weathers>() {
-//            @Override
-//            public void onResponse(Call<Weathers> call, Response<Weathers> response) {
-//                if (response.isSuccessful()) {
-//                    weather = response.body();
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Weathers> call, Throwable t) {
-//                Log.i("onFailure", t.getMessage());
-//            }
-//        });
-
-
-//        APIUtils.getAPIService().getWeatherDay().enqueue(new Callback<Weathers>() {
-//            @Override
-//            public void onResponse(Call<Weathers> call, Response<Weathers> response) {
-//                if (response.isSuccessful()) {
-//                    weather = response.body();
-//                    tvCityName.setText(weather.name);
-//                    tvStatus.setText(weather.weather.get(0).main);
-//                    tvTemp.setText(String.valueOf(weather.main.temp) + "°C");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Weathers> call, Throwable t) {
-//                Log.i("onFailure", t.getMessage());
-//            }
-//        });
     }
 
-    private void getWeatherFiveDay() {
-        APIUtils.getAPIService().getWeatherFiveDay().enqueue(new Callback<WeatherFiveDay>() {
-            @SuppressLint("WrongConstant")
-            @Override
-            public void onResponse(Call<WeatherFiveDay> call, Response<WeatherFiveDay> response) {
-                if (response.isSuccessful()) {
-                    weatherFiveDay = response.body();
-                    listOneDay = weatherFiveDay.list;
-                    mAdapter = new WeatherAdapter(MainActivity.this);
-                    mAdapter.setDatas(listOneDay);
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-                    layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                    rvFiveDay.setLayoutManager(layoutManager);
-                    rvFiveDay.setAdapter(mAdapter);
-                    swipeRefreshLayout.setRefreshing(false);
-                    Log.d(TAG, "onResponse: " + response.body());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<WeatherFiveDay> call, Throwable t) {
-                Log.i("onFailure", t.getMessage());
-
-            }
-        });
+    private void getWeatherFiveDay(double lat, double lon) {
+        presenter.getWeatherFiveDay(String.valueOf(lat),
+                String.valueOf(lon),
+                COUNT_DAY,
+                Common.APP_ID, "metric");
     }
 
-    @Override
-    public void onRefresh() {
-//        getWeatherOneDay();
-        requestPermission();
+    private void setAction() {
+        swipeRefreshLayout.setOnRefreshListener(this);
     }
+
+
 }
 
