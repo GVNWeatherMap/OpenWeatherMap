@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
+
     defaultConfig {
         applicationId "minhnq.gvn.com.openweathermap"
         minSdkVersion 23
@@ -43,6 +44,8 @@ dependencies {
     //play service
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.karumi:dexter:4.2.0'
+
     implementation 'androidx.multidex:multidex:2.0.0'
+    implementation 'io.paperdb:paperdb:2.6'
 
 }

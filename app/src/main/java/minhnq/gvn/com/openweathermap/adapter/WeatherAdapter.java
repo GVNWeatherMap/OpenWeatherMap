@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import minhnq.gvn.com.openweathermap.R;
 import minhnq.gvn.com.openweathermap.model.WeatherOneDay;
+import minhnq.gvn.com.openweathermap.utils.Common;
 
 public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder>  {
 
@@ -32,6 +33,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
         this.mOneDayList = list;
         notifyDataSetChanged();
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
@@ -43,15 +45,9 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         WeatherOneDay weatherOneDay = mOneDayList.get(i);
-        long unixTime = weatherOneDay.dt;
-        Date date = new Date(unixTime*1000L);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        String day = simpleDateFormat.format(date);
-
-        viewHolder.tvDay.setText(weatherOneDay.dt_txt);
-
-        int  temp_min = (int) Math.round(weatherOneDay.main.temp_min);
-        int  temp_max = (int) Math.round(weatherOneDay.main.temp_max);
+        viewHolder.tvDay.setText(Common.convertUnixToDate(weatherOneDay.dt));
+        int temp_min = (int) Math.round(weatherOneDay.main.temp_min);
+        int temp_max = (int) Math.round(weatherOneDay.main.temp_max);
         viewHolder.tvMinTemp.setText(String.valueOf(temp_min));
         viewHolder.tvMaxTemp.setText(String.valueOf(temp_max));
         Glide.with(mContext).load("http://openweathermap.org/img/w/"+ weatherOneDay.weather.get(0).icon +".png").into(viewHolder.imgIcon);

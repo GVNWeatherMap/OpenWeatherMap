@@ -26,28 +26,24 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(intent !=null){
-            String name = intent.getStringExtra(MainActivity.NAME);
-            String main = intent.getStringExtra(MainActivity.MAIN);
-            String temp = intent.getStringExtra(MainActivity.TEMP);
-            Intent cancelIntent = new Intent();
-            cancelIntent.setAction("CANCEL");
+            String name = intent.getStringExtra(MainActivity.EXTRA_NAME);
+            String main = intent.getStringExtra(MainActivity.EXTRA_MAIN);
+            String temp = intent.getStringExtra(MainActivity.EXTRA_TEMP);
+            Intent mainIntent = new Intent(this,MainActivity.class);
             // Set the Activity to start in a new, empty task
-            cancelIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+            mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             // Create the PendingIntent
-            PendingIntent notifyPendingIntent = PendingIntent.getBroadcast(
-                    this, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent notifyPendingIntent = PendingIntent.getActivity(
+                    this, 0, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             Notification notification = mBuilder.build();
             mBuilder.setSmallIcon(R.drawable.icon_notify)
                     .setContentTitle("Weather Now")
-                    .setOngoing(true)
-                    .addAction(R.drawable.ic_launcher_background,"Cancel",notifyPendingIntent)
                     .setContentText(name + ": " + main + " - " + temp + "°C");
             mBuilder.setContentIntent(notifyPendingIntent);
             mNotificationManager.notify(001, mBuilder.build());
-            startForeground(1,notification);
         }
-        return START_NOT_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     @Nullable

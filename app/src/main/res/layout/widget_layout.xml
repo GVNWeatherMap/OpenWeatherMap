@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_weather"
+    android:padding="16dp"
+    android:orientation="horizontal"
+    android:id="@+id/rlv_widget">
+
+    <TextView
+        android:id="@+id/tv_city_widget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="40sp"
+        android:layout_centerVertical="true"
+        android:text="City"
+        android:textColor="#FFF" />
+
+    <TextView
+        android:id="@+id/tv_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:text="Temp"
+        android:textColor="#FFF"
+        android:textSize="22sp" />
+
+</RelativeLayout>
