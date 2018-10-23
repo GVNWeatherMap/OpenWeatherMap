@@ -1,22 +1,17 @@
 package minhnq.gvn.com.openweathermap.view;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Looper;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -28,15 +23,14 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import io.paperdb.Paper;
 import minhnq.gvn.com.openweathermap.R;
 import minhnq.gvn.com.openweathermap.adapter.WeatherAdapter;
 import minhnq.gvn.com.openweathermap.constract.MainContract;
@@ -73,11 +67,15 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
 
     @Override
     public void onResponse(Weathers weather) {
+        int temp = (int)weather.main.temp;
         tvCityName.setText(weather.name);
         tvStatus.setText(weather.weather.get(0).main);
-        tvTemp.setText(String.valueOf(weather.main.temp) + "°C");
+        tvTemp.setText(temp + "°C");
         swipeRefreshLayout.setRefreshing(false);
 
+        Paper.init(this);
+        Paper.book().write("city",weather.name);
+        Paper.book().write("temp",temp);
     }
 
     @Override
@@ -128,7 +126,6 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         navigationView = findViewById(R.id.nav_view);
         drawerLayout = findViewById(R.id.drawer_layout);
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -214,7 +211,5 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
     private void setAction() {
         swipeRefreshLayout.setOnRefreshListener(this);
     }
-
-
 }
 
