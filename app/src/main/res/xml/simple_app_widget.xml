@@ -6,6 +6,6 @@
     android:minWidth="300dp"
     android:previewImage="@android:drawable/ic_menu_add"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="0"
-    android:widgetCategory="home_screen">
+    android:widgetCategory="home_screen"
+    android:updatePeriodMillis="5000">
 </appwidget-provider>

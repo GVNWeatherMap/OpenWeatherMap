@@ -1,7 +1,13 @@
 package minhnq.gvn.com.openweathermap.presenter;
 
 
+import android.content.Context;
+
+import java.util.List;
+
 import minhnq.gvn.com.openweathermap.constract.MainContract;
+import minhnq.gvn.com.openweathermap.database.LocationSQLiteUtils;
+import minhnq.gvn.com.openweathermap.model.Location;
 import minhnq.gvn.com.openweathermap.model.WeatherFiveDay;
 import minhnq.gvn.com.openweathermap.model.Weathers;
 import minhnq.gvn.com.openweathermap.utils.APIUtils;
@@ -10,7 +16,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainPresenter extends BasePresenter<MainContract.IMainView> implements MainContract.IMainPresenter {
-    private WeatherFiveDay weatherFiveDay = new WeatherFiveDay();
 
     public MainPresenter(MainContract.IMainView iMainView) {
         super(iMainView);
@@ -46,6 +51,13 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
         });
     }
 
-
-
+    @Override
+    public void getAllLocation(Context context) {
+        LocationSQLiteUtils sqLiteUtils = new LocationSQLiteUtils(context);
+        sqLiteUtils.open();
+        sqLiteUtils.dumpData();
+        List<Location> list = sqLiteUtils.getAllLocation();
+        sqLiteUtils.close();
+        view.onResponeAllLocation(list);
+    }
 }

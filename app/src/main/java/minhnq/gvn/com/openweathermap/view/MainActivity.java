@@ -9,8 +9,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -40,25 +43,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import io.paperdb.Paper;
 import minhnq.gvn.com.openweathermap.R;
+import minhnq.gvn.com.openweathermap.adapter.LocationApdater;
 import minhnq.gvn.com.openweathermap.adapter.WeatherAdapter;
 import minhnq.gvn.com.openweathermap.constract.MainContract;
+import minhnq.gvn.com.openweathermap.model.Location;
 import minhnq.gvn.com.openweathermap.model.WeatherFiveDay;
 import minhnq.gvn.com.openweathermap.model.WeatherOneDay;
 import minhnq.gvn.com.openweathermap.model.Weathers;
 import minhnq.gvn.com.openweathermap.presenter.MainPresenter;
 import minhnq.gvn.com.openweathermap.receiver.AlarmReceiver;
-import minhnq.gvn.com.openweathermap.service.NotificationService;
 import minhnq.gvn.com.openweathermap.utils.Common;
 
 
-public class MainActivity extends BaseActivity<MainContract.IMainPresenter> implements SwipeRefreshLayout.OnRefreshListener, MainContract.IMainView {
+public class MainActivity extends BaseActivity<MainContract.IMainPresenter> implements
+        SwipeRefreshLayout.OnRefreshListener, MainContract.IMainView,LocationApdater.ILocationListener {
     private static final String TAG = "TAG";
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_MAIN = "main";
     public static final String EXTRA_TEMP = "temp";
     private static int COUNT_DAY = 5;
     private TextView tvCityName, tvStatus, tvTemp;
-    private RecyclerView rvFiveDay;
+    private RecyclerView rvFiveDay,rvAllLocation;
+    private EditText edtSearch;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -67,7 +73,11 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
     private LocationCallback locationCallback;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private WeatherAdapter mAdapter;
+    private LocationApdater mLocationApdater;
     private List<WeatherOneDay> listOneDay = new ArrayList<>();
+    private List<Location> listLocation = new ArrayList<>();
+    List<Location> searchList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +87,8 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
         initView();
         setUpToolbar();
         setAction();
+        presenter.getAllLocation(this);
+        mLocationApdater.initILocationListener(this);
     }
 
     @Override
@@ -104,6 +116,18 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
         rvFiveDay.setLayoutManager(layoutManager);
         rvFiveDay.setAdapter(mAdapter);
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onResponeAllLocation(List<Location> list) {
+        listLocation = list;
+        Log.i(TAG, String.valueOf(list.size()));
+        mLocationApdater = new LocationApdater(this);
+        mLocationApdater.setDatas(listLocation);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
+        rvAllLocation.setLayoutManager(layoutManager);
+        rvAllLocation.setAdapter(mLocationApdater);
     }
 
     @Override
@@ -138,7 +162,9 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
         tvCityName = findViewById(R.id.txv_main_city_name);
         tvStatus = findViewById(R.id.txv_main_status);
         tvTemp = findViewById(R.id.txv_main_current_temp);
+        edtSearch = findViewById(R.id.edt_main_search_location);
         rvFiveDay = findViewById(R.id.rv_main_weather_week);
+        rvAllLocation = findViewById(R.id.rv_navigation_all_location);
         toolbar = findViewById(R.id.toolBar);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -151,7 +177,36 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
                 return true;
             }
         });
-    }
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                searchList.clear();
+                String strSearch = charSequence.toString();
+                strSearch = strSearch.replace(".", "");
+                strSearch = strSearch.replace(" ", "");
+                for (Location l: listLocation){
+                    if(l.cityName.toLowerCase().contains(strSearch.toLowerCase())){
+                        searchList.add(l);
+                    }
+                }
+                mLocationApdater.setDatas(searchList);
+                LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+                layoutManager.setOrientation(RecyclerView.VERTICAL);
+                rvAllLocation.setLayoutManager(layoutManager);
+                rvAllLocation.setAdapter(mLocationApdater);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+  }
 
     private void setUpToolbar() {
         setSupportActionBar(toolbar);
@@ -231,7 +286,6 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
         String name = weathers.name;
         String temp = String.valueOf(weathers.main.temp);
         String main = weathers.weather.get(0).main;
-
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
         alarmIntent.putExtra(EXTRA_NAME, name);
         alarmIntent.putExtra(EXTRA_MAIN, main);
@@ -245,13 +299,11 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
         calendarAlarm.set(Calendar.SECOND, 0);
         calendarAlarm.set(Calendar.MILLISECOND, 0);
         long tringgerTime = calendarAlarm.getTimeInMillis();
-
         if (calendarAlarm.before(calendarNow)) {
             tringgerTime += 86400000L;
         }
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, tringgerTime, pendingIntent);
-
     }
 
     private void setAction() {
@@ -261,13 +313,23 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
     @Override
     protected void onStop() {
         super.onStop();
-        Intent serviceIntent = new Intent(this, NotificationService.class);
-        stopService(serviceIntent);
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
 
-}
+    @Override
+    public void onClickLocation(Location location) {
 
+        presenter.getWeatherNow(String.valueOf(location.lattitude),
+                String.valueOf(location.longtitude),
+                Common.APP_ID, "metric");
+
+        presenter.getWeatherFiveDay(String.valueOf(location.lattitude),
+                String.valueOf(location.longtitude),
+                COUNT_DAY,
+                Common.APP_ID, "metric");
+        drawerLayout.closeDrawers();
+    }
+}

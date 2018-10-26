@@ -20,6 +20,9 @@ public interface APIService {
                                       @Query("units") String unit);
 
     @GET("forecast")
+
+
+
     Call<WeatherFiveDay> getWeatherFiveDayByLatLng(@Query("lat") String lat,
                                              @Query("lon") String lng,
                                              @Query("cnt") int cnt,

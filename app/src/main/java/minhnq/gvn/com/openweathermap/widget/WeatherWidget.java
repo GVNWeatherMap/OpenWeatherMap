@@ -24,12 +24,14 @@ public class WeatherWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
+        Log.i(TAG, "onUpdate: From update widget");
         final int count = appWidgetIds.length;
         AppWidgetManager widgetManager = appWidgetManager;
 //        ComponentName watchWidget = new ComponentName(context, WeatherWidget.class);
         for (int i = 0; i < count; i++) {
             int widgetId = appWidgetIds[i];
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+
             Intent intent = new Intent(context, WeatherWidget.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             remoteViews.setOnClickPendingIntent(R.id.tv_temperature, pendingIntent);
@@ -49,6 +51,7 @@ public class WeatherWidget extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+        Log.i(TAG, "onReceive: From widget");
         Paper.init(context);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build();
         StrictMode.setThreadPolicy(policy);
@@ -88,4 +91,6 @@ public class WeatherWidget extends AppWidgetProvider {
         // Apply the changes
         appWidgetManager.updateAppWidget(watchWidget, remoteViews);
     }
+
+
 }
