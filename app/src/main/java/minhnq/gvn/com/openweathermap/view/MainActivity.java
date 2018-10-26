@@ -77,7 +77,6 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
         Paper.book().write("city",weather.name);
         Paper.book().write("temp",temp);
     }
-
     @Override
     public void onResponeFiveDay(WeatherFiveDay weatherFiveDay) {
         mAdapter = new WeatherAdapter(MainActivity.this);

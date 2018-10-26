@@ -14,7 +14,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainPresenter extends BasePresenter<MainContract.IMainView> implements MainContract.IMainPresenter {
-    private WeatherFiveDay weatherFiveDay = new WeatherFiveDay();
+
 
     public MainPresenter(MainContract.IMainView iMainView) {
         super(iMainView);
@@ -41,7 +41,6 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
             @Override
             public void onResponse(Call<WeatherFiveDay> call, Response<WeatherFiveDay> response) {
                 view.onResponeFiveDay(response.body());
-//                weatherFiveDay = response.body();
             }
 
             @Override
