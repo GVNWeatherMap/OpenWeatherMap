@@ -40,7 +40,7 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
         APIUtils.getAPIService().getWeatherFiveDayByLatLng(lat, lng, cnt, appid, unit).enqueue(new Callback<WeatherFiveDay>() {
             @Override
             public void onResponse(Call<WeatherFiveDay> call, Response<WeatherFiveDay> response) {
-                view.onResponeFiveDay(response.body());
+                view.onResponseFiveDay(response.body());
             }
 
             @Override

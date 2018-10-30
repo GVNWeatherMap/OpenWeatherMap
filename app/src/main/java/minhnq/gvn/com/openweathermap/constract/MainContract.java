@@ -10,7 +10,7 @@ public interface MainContract extends BaseContract {
 
     interface IMainView extends IViewCallBack {
         void onResponse(Weathers weather);
-        void onResponeFiveDay(WeatherFiveDay weatherFiveDay);
+        void onResponseFiveDay(WeatherFiveDay weatherFiveDay);
     }
 
     interface IMainPresenter extends IPresenterCallBack {

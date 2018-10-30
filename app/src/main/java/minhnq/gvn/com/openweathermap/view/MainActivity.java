@@ -1,17 +1,26 @@
 package minhnq.gvn.com.openweathermap.view;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -23,8 +32,10 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,17 +44,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import io.paperdb.Paper;
 import minhnq.gvn.com.openweathermap.R;
 import minhnq.gvn.com.openweathermap.adapter.WeatherAdapter;
+import minhnq.gvn.com.openweathermap.broadcast.MyBroadcast;
 import minhnq.gvn.com.openweathermap.constract.MainContract;
 import minhnq.gvn.com.openweathermap.model.WeatherFiveDay;
 import minhnq.gvn.com.openweathermap.model.WeatherOneDay;
 import minhnq.gvn.com.openweathermap.model.Weathers;
 import minhnq.gvn.com.openweathermap.presenter.MainPresenter;
+import minhnq.gvn.com.openweathermap.service.UpdateService;
 import minhnq.gvn.com.openweathermap.utils.Common;
+import minhnq.gvn.com.openweathermap.utils.Constants;
 
 
-public class MainActivity extends BaseActivity<MainContract.IMainPresenter> implements SwipeRefreshLayout.OnRefreshListener, MainContract.IMainView {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "TAG";
-    private static int COUNT_DAY = 5;
     private TextView tvCityName, tvStatus, tvTemp;
     private RecyclerView rvFiveDay;
     private Toolbar toolbar;
@@ -59,45 +72,38 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         initView();
         setUpToolbar();
-        setAction();
+        setSwipeRefresh();
         requestPermission();
     }
 
     @Override
-    public void onResponse(Weathers weather) {
-        int temp = (int)weather.main.temp;
-        tvCityName.setText(weather.name);
-        tvStatus.setText(weather.weather.get(0).main);
-        tvTemp.setText(temp + "°C");
-        swipeRefreshLayout.setRefreshing(false);
-
-        Paper.init(this);
-        Paper.book().write("city",weather.name);
-        Paper.book().write("temp",temp);
-    }
-    @Override
-    public void onResponeFiveDay(WeatherFiveDay weatherFiveDay) {
-        mAdapter = new WeatherAdapter(MainActivity.this);
-        listOneDay = weatherFiveDay.list;
-        mAdapter.setDatas(listOneDay);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-        layoutManager.setOrientation(RecyclerView.VERTICAL);
-        rvFiveDay.setLayoutManager(layoutManager);
-        rvFiveDay.setAdapter(mAdapter);
-        swipeRefreshLayout.setRefreshing(false);
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filterF = new IntentFilter(Constants.ACTION_WEATHER_FIVEDAY);
+        registerReceiver(broadcastWeatherFive, filterF);
+        IntentFilter filterO = new IntentFilter(Constants.ACTION_WEATHER_ONEDAY);
+        registerReceiver(broadcastWeatherOne, filterO);
     }
 
     @Override
-    protected MainContract.IMainPresenter getPresenter() {
-        return new MainPresenter(this);
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastWeatherFive);
+        unregisterReceiver(broadcastWeatherOne);
     }
 
-    @Override
-    int getIdLayout() {
-        return R.layout.activity_main;
-    }
+//    @Override
+//    protected MainContract.IMainPresenter getPresenter() {
+//        return new MainPresenter(this);
+//    }
+
+//    @Override
+//    int getIdLayout() {
+//        return R.layout.activity_main;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -138,7 +144,6 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
     private void setUpToolbar() {
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
-        toolbar.setTitle("Weather");
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -178,10 +183,13 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
+                Paper.init(MainActivity.this);
                 double lat = locationResult.getLastLocation().getLatitude();
                 double lon = locationResult.getLastLocation().getLongitude();
-                getWeatherOneDay(lat, lon);
-                getWeatherFiveDay(lat, lon);
+                Paper.book().write(Constants.LOCATION_LAT, lat);
+                Paper.book().write(Constants.LOCATION_LON, lon);
+                Intent intent = new Intent(MainActivity.this, UpdateService.class);
+                startService(intent);
             }
         };
     }
@@ -194,20 +202,35 @@ public class MainActivity extends BaseActivity<MainContract.IMainPresenter> impl
         locationRequest.setSmallestDisplacement(10.0f);
     }
 
-    private void getWeatherOneDay(double lat, double lon) {
-        presenter.getWeatherNow(String.valueOf(lat),
-                String.valueOf(lon),
-                Common.APP_ID, "metric");
-    }
+    private MyBroadcast broadcastWeatherFive = new MyBroadcast() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            super.onReceive(context, intent);
+            mAdapter = new WeatherAdapter(MainActivity.this);
+            Bundle bundle = intent.getExtras();
+            WeatherFiveDay fiveDay = bundle.getParcelable(Constants.EXTRA_WEATHER_FIVEDAY);
+            listOneDay = fiveDay.list;
+            mAdapter.setDatas(listOneDay);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+            layoutManager.setOrientation(RecyclerView.VERTICAL);
+            rvFiveDay.setLayoutManager(layoutManager);
+            rvFiveDay.setAdapter(mAdapter);
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    };
 
-    private void getWeatherFiveDay(double lat, double lon) {
-        presenter.getWeatherFiveDay(String.valueOf(lat),
-                String.valueOf(lon),
-                COUNT_DAY,
-                Common.APP_ID, "metric");
-    }
+    private MyBroadcast broadcastWeatherOne = new MyBroadcast() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            super.onReceive(context, intent);
+            tvCityName.setText(intent.getStringExtra(Constants.EXTRA_CITY));
+            tvStatus.setText(intent.getStringExtra(Constants.EXTRA_STATUS));
+            tvTemp.setText(intent.getIntExtra(Constants.EXTRA_TEMP, 0) + "°C");
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    };
 
-    private void setAction() {
+    private void setSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener(this);
     }
 }
