@@ -6,7 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Looper;
 
 import androidx.annotation.NonNull;
@@ -18,6 +23,8 @@ import androidx.core.app.ActivityCompat;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +65,7 @@ import minhnq.gvn.com.openweathermap.utils.Constants;
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "TAG";
     private TextView tvCityName, tvStatus, tvTemp;
+    private ImageView imageView;
     private RecyclerView rvFiveDay;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -123,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void initView() {
+        imageView = findViewById(R.id.image_view);
         tvCityName = findViewById(R.id.txv_main_city_name);
         tvStatus = findViewById(R.id.txv_main_status);
         tvTemp = findViewById(R.id.txv_main_current_temp);
@@ -223,12 +232,45 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         @Override
         public void onReceive(Context context, Intent intent) {
             super.onReceive(context, intent);
+            String status = intent.getStringExtra(Constants.EXTRA_STT);
+//            Bitmap bm = BitmapFactory.decodeResource(context.getResources(),R.drawable.bg_cloudy);
+//            BitmapDrawable bg = new BitmapDrawable(getResizedBitmap(bm,600));
+            switch (status) {
+                case "Clear":
+                    imageView.setImageResource(R.drawable.bg_cloudy);
+                    break;
+                case "Sunny":
+                    imageView.setImageResource(R.drawable.bg_sunny);
+                    break;
+                case "Rain":
+                    imageView.setImageResource(R.drawable.bg_rainny);
+                    break;
+                default:
+                    imageView.setImageResource(R.drawable.bg_cloudy);
+                    break;
+            }
             tvCityName.setText(intent.getStringExtra(Constants.EXTRA_CITY));
             tvStatus.setText(intent.getStringExtra(Constants.EXTRA_STATUS));
             tvTemp.setText(intent.getIntExtra(Constants.EXTRA_TEMP, 0) + "°C");
             swipeRefreshLayout.setRefreshing(false);
         }
     };
+
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / (float) height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
 
     private void setSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener(this);
