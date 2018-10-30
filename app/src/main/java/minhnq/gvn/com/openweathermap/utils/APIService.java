@@ -7,11 +7,11 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface APIService {
-    @GET("weather?q=Hanoi&units=metric&appid=56757f8c2e7f418d9cfb2dd63c961001")
-    Call<Weathers> getWeatherDay();
-
-    @GET("forecast?q=Hanoi&units=metric&cnt=5&appid=56757f8c2e7f418d9cfb2dd63c961001")
-    Call<WeatherFiveDay> getWeatherFiveDay();
+//    @GET("weather?q=Hanoi&units=metric&appid=56757f8c2e7f418d9cfb2dd63c961001")
+//    Call<Weathers> getWeatherDay();
+//
+//    @GET("forecast?q=Hanoi&units=metric&cnt=5&appid=56757f8c2e7f418d9cfb2dd63c961001")
+//    Call<WeatherFiveDay> getWeatherFiveDay();
 
     @GET("weather")
     Call<Weathers> getWeatherByLatLng(@Query("lat") String lat,

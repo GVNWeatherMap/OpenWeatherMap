@@ -29,7 +29,6 @@ public class RetrofitUtils {
                 .build();
     }
 
-
     public static APIService getAPIService() {
         return APIClient.getClient(Constants.BASE_URL).create(APIService.class);
     }

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+   <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:allowBackup="true"
@@ -17,11 +18,13 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <service android:name=".service.NotificationService"/>
-
+        <service android:name=".service.UpdateService"/>
+        <receiver android:name=".receiver.UpdateTimeBroadcastReceiver"/>
         <receiver android:name=".receiver.AlarmReceiver">
             <intent-filter>
                 <action android:name="TEST"/>

@@ -31,7 +31,6 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
 
             @Override
             public void onFailure(Call<Weathers> call, Throwable t) {
-
             }
         });
     }

@@ -13,13 +13,13 @@ public abstract class BaseActivity<presenter extends IPresenterCallBack> extends
      presenter presenter;
      Retrofit.Builder builder;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         builder = RetrofitUtils.newInstance();
         setContentView(getIdLayout());
         presenter = getPresenter();
-
     }
 
     protected abstract presenter getPresenter();

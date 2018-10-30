@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_weather"
-    android:padding="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
     android:orientation="horizontal"
     android:id="@+id/rlv_widget">
 
@@ -14,7 +15,6 @@
         android:clickable="true"
         android:fontFamily="sans-serif-condensed"
         android:textSize="40sp"
-        android:layout_centerVertical="true"
         android:text="City"
         android:textColor="#FFF" />
 
@@ -24,9 +24,19 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
         android:text="Temp"
         android:textColor="#FFF"
-        android:textSize="22sp" />
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/txv_widget_hour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_city_widget"
+        android:layout_alignParentStart="true"
+        android:clickable="true"
+        android:text="Hour"
+        android:textColor="#FFF"
+        android:textSize="15sp" />
 
 </RelativeLayout>
