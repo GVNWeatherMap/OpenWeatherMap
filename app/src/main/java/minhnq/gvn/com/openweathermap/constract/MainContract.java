@@ -15,12 +15,11 @@ public interface MainContract extends BaseContract {
 
     interface IMainView extends IViewCallBack {
         void onResponse(Weathers weather);
-        void onResponeFiveDay(WeatherFiveDay weatherFiveDay);
-        void onResponeAllLocation(List<Location> list);
+        void onResponseFiveDay(WeatherFiveDay weatherFiveDay);
+        void onGetAllLocation(List<Location> locationList);
     }
 
     interface IMainPresenter extends IPresenterCallBack {
-
         void getWeatherNow(String lat,
                            String lng,
                            String appid,
@@ -34,6 +33,4 @@ public interface MainContract extends BaseContract {
 
         void getAllLocation(Context context);
     }
-
-
 }

@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Weathers implements Parcelable {
@@ -31,7 +30,7 @@ public class Weathers implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(this.weather);
+        dest.writeTypedList(this.weather);
         dest.writeParcelable(this.main, flags);
         dest.writeString(this.name);
     }
@@ -40,8 +39,7 @@ public class Weathers implements Parcelable {
     }
 
     protected Weathers(Parcel in) {
-        this.weather = new ArrayList<Weather>();
-        in.readList(this.weather, Weather.class.getClassLoader());
+        this.weather = in.createTypedArrayList(Weather.CREATOR);
         this.main = in.readParcelable(Main.class.getClassLoader());
         this.name = in.readString();
     }
@@ -57,5 +55,4 @@ public class Weathers implements Parcelable {
             return new Weathers[size];
         }
     };
-
 }

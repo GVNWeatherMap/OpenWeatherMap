@@ -5,15 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/background_weather"
-        android:orientation="vertical"
-        android:weightSum="10"
-        tools:context=".view.MainActivity">
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY" />
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="10"
+            tools:context=".view.MainActivity">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolBar"
@@ -26,57 +35,58 @@
             android:id="@+id/act_autoTextView"
             android:hint="Enter location name"
             android:textColor="@color/text_main"
+            android:backgroundTint="#FFF"
             android:textColorHint="@color/text_main"
             />
         </androidx.appcompat.widget.Toolbar>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_refresh-layout"
+            android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="5"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/txv_main_city_name"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="city"
-                    android:textColor="@color/text_main"
-                    android:textSize="@dimen/text_main_city_name" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/txv_main_status"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="Status"
-                    android:textColor="@color/text_main"
-                    android:textSize="@dimen/text_main_status" />
+                    <TextView
+                        android:id="@+id/txv_main_city_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="city"
+                        android:textColor="@color/text_main"
+                        android:textSize="@dimen/text_main_city_name" />
 
-                <TextView
-                    android:id="@+id/txv_main_current_temp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="0°"
-                    android:textColor="@color/text_main"
-                    android:textSize="@dimen/text_main_current_temp" />
+                    <TextView
+                        android:id="@+id/txv_main_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="Status"
+                        android:textColor="@color/text_main"
+                        android:textSize="@dimen/text_main_status" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_main_weather_week"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="50dp"
-                    android:layout_weight="5" />
-            </LinearLayout>
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/txv_main_current_temp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="0°"
+                        android:textColor="@color/text_main"
+                        android:textSize="@dimen/text_main_current_temp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_main_weather_week"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="85dp"
+                        android:layout_gravity="bottom"/>
+                </LinearLayout>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        </LinearLayout>
+    </FrameLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
@@ -92,32 +102,32 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <EditText
-                android:id="@+id/edt_main_search_location"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:hint="Insert location"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
+            <!--<EditText-->
+                <!--android:id="@+id/edt_main_search_location"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="48dp"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:layout_marginBottom="8dp"-->
+                <!--android:hint="Insert location"-->
+                <!--app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintTop_toTopOf="parent"-->
+                <!--app:layout_constraintVertical_bias="0.0" />-->
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_navigation_all_location"
-                android:layout_width="match_parent"
-                android:layout_height="493dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editText"
-                app:layout_constraintVertical_bias="0.1" />
+            <!--<androidx.recyclerview.widget.RecyclerView-->
+                <!--android:id="@+id/rv_navigation_all_location"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="493dp"-->
+                <!--android:layout_marginStart="8dp"-->
+                <!--android:layout_marginTop="8dp"-->
+                <!--android:layout_marginEnd="8dp"-->
+                <!--android:layout_marginBottom="8dp"-->
+                <!--app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintHorizontal_bias="0.0"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintTop_toBottomOf="@+id/editText"-->
+                <!--app:layout_constraintVertical_bias="0.1" />-->
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

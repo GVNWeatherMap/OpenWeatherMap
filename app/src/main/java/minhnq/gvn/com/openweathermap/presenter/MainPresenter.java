@@ -31,6 +31,7 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
 
             @Override
             public void onFailure(Call<Weathers> call, Throwable t) {
+
             }
         });
     }
@@ -40,13 +41,14 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
         APIUtils.getAPIService().getWeatherFiveDayByLatLng(lat, lng, cnt, appid, unit).enqueue(new Callback<WeatherFiveDay>() {
             @Override
             public void onResponse(Call<WeatherFiveDay> call, Response<WeatherFiveDay> response) {
-                view.onResponeFiveDay(response.body());
+                view.onResponseFiveDay(response.body());
             }
 
             @Override
             public void onFailure(Call<WeatherFiveDay> call, Throwable t) {
 
             }
+
         });
     }
 
@@ -57,6 +59,6 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
         sqLiteUtils.dumpData();
         List<Location> list = sqLiteUtils.getAllLocation();
         sqLiteUtils.close();
-        view.onResponeAllLocation(list);
+//        view.onResponeAllLocation(list);
     }
 }

@@ -34,12 +34,15 @@
         <receiver android:name=".widget.WeatherWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="minhnq.gvn.com.openweathermap.widget.CLOCK_WIDGET_UPDATE" />
+                <action android:name="minhnq.gvn.com.openweathermap.ACTION_WEATHER_ONEDAY"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/simple_app_widget" />
         </receiver>
+        <service android:name=".service.UpdateService"/>
     </application>
 
 

@@ -28,7 +28,7 @@ public class UpdateTimeBroadcastReceiver extends BroadcastReceiver {
            //You can do the processing here update the widget/remote views.
            RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                  R.layout.widget_layout);
-           remoteViews.setTextViewText(R.id.txv_widget_hour, getCurrentTime("hh:mm"));
+           remoteViews.setTextViewText(R.id.tv_time_widget, getCurrentTime("hh:mm"));
            ComponentName thiswidget = new ComponentName(context, WeatherWidget.class);
            AppWidgetManager manager = AppWidgetManager.getInstance(context);
            manager.updateAppWidget(thiswidget, remoteViews);
