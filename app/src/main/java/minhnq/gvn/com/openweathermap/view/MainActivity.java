@@ -64,6 +64,9 @@ import minhnq.gvn.com.openweathermap.utils.Constants;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "TAG";
+    private static final String WEATHER_SUNNY = "Sunny";
+    private static final String WEATHER_RAIN = "Rain";
+    private static final String WEATHER_CLEAR = "Clear";
     private TextView tvCityName, tvStatus, tvTemp;
     private ImageView imageView;
     private RecyclerView rvFiveDay;
@@ -233,16 +236,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         public void onReceive(Context context, Intent intent) {
             super.onReceive(context, intent);
             String status = intent.getStringExtra(Constants.EXTRA_STT);
-//            Bitmap bm = BitmapFactory.decodeResource(context.getResources(),R.drawable.bg_cloudy);
-//            BitmapDrawable bg = new BitmapDrawable(getResizedBitmap(bm,600));
+
             switch (status) {
-                case "Clear":
+                case WEATHER_CLEAR:
                     imageView.setImageResource(R.drawable.bg_cloudy);
                     break;
-                case "Sunny":
+                case WEATHER_SUNNY:
                     imageView.setImageResource(R.drawable.bg_sunny);
                     break;
-                case "Rain":
+                case WEATHER_RAIN:
                     imageView.setImageResource(R.drawable.bg_rainny);
                     break;
                 default:
@@ -257,6 +259,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     };
 
     public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+//        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.bg_cloudy);
+//        BitmapDrawable bg = new BitmapDrawable(getResizedBitmap(bm, 600));
         int width = image.getWidth();
         int height = image.getHeight();
 
