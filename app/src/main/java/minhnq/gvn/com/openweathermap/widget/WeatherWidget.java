@@ -7,17 +7,15 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.SystemClock;
-import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import java.util.Calendar;
 
 import minhnq.gvn.com.openweathermap.R;
 import minhnq.gvn.com.openweathermap.service.UpdateService;
 import minhnq.gvn.com.openweathermap.utils.Constants;
+import minhnq.gvn.com.openweathermap.view.MainActivity;
 
 
 public class WeatherWidget extends AppWidgetProvider {
@@ -41,7 +39,7 @@ public class WeatherWidget extends AppWidgetProvider {
 //            remoteViews.setOnClickPendingIntent(R.id.rlv_widget, getPendingSelfIntent(context, WIDGET_CLICK));
 //            widgetManager.updateAppWidget(widgetId, remoteViews);
 //        }
-
+//
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         final Intent intent = new Intent(context, UpdateService.class);
         if (pendingIntent == null) {
@@ -70,10 +68,10 @@ public class WeatherWidget extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         super.onDisabled(context);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(createUpdateIntent(context));
-        IntentFilter filter = new IntentFilter(Constants.ACTION_WEATHER_ONEDAY);
-        context.registerReceiver(this, filter);
+//        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//        alarmManager.cancel(createUpdateIntent(context));
+//        IntentFilter filter = new IntentFilter(Constants.ACTION_WEATHER_ONEDAY);
+//        context.registerReceiver(this, filter);
     }
 
     private String getCurrentDateTime() {
@@ -107,8 +105,5 @@ public class WeatherWidget extends AppWidgetProvider {
             AppWidgetManager manager = AppWidgetManager.getInstance(context);
             manager.updateAppWidget(widget, remoteViews);
         }
-    }
-
-    private class MainActivity {
     }
 }

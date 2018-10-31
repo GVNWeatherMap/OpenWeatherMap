@@ -7,18 +7,17 @@ public class Location implements Parcelable {
 
     public int locationid;
     public String cityName;
-    public double longtitude;
-    public double lattitude;
+    public int cityCode;
+    public int published;
+    public int ordering;
 
-    public Location(String name, double longtitude, double lattitude) {
-        this.cityName = name;
-        this.lattitude = lattitude;
-        this.longtitude = longtitude;
+    public Location(int locationid, String cityName, int cityCode, int published, int ordering) {
+        this.locationid = locationid;
+        this.cityName = cityName;
+        this.cityCode = cityCode;
+        this.published = published;
+        this.ordering = ordering;
     }
-
-    public Location() {
-    }
-
 
     @Override
     public int describeContents() {
@@ -29,15 +28,20 @@ public class Location implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.locationid);
         dest.writeString(this.cityName);
-        dest.writeDouble(this.longtitude);
-        dest.writeDouble(this.lattitude);
+        dest.writeInt(this.cityCode);
+        dest.writeInt(this.published);
+        dest.writeInt(this.ordering);
+    }
+
+    public Location() {
     }
 
     protected Location(Parcel in) {
         this.locationid = in.readInt();
         this.cityName = in.readString();
-        this.longtitude = in.readDouble();
-        this.lattitude = in.readDouble();
+        this.cityCode = in.readInt();
+        this.published = in.readInt();
+        this.ordering = in.readInt();
     }
 
     public static final Creator<Location> CREATOR = new Creator<Location>() {

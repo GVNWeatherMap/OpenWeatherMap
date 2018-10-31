@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public static final String EXTRA_WEATHER_FIVE_DAY = "fiveDay";
     public static final String EXTRA_LATITUDE = "latitude";
     public static final String EXTRA_LONGTITUDE = "longtitude";
-    public static final String EXTRA_BUNDLE_LOCATION = "location";
 
     private static int COUNT_DAY = 5;
     private TextView tvCityName, tvStatus, tvTemp;
@@ -215,9 +214,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 Paper.init(MainActivity.this);
                 double lat = locationResult.getLastLocation().getLatitude();
                 double lon = locationResult.getLastLocation().getLongitude();
-                Paper.book().write(Constants.LOCATION_LAT, lat);
-                Paper.book().write(Constants.LOCATION_LON, lon);
                 Intent intent = new Intent(MainActivity.this, UpdateService.class);
+                Bundle bundle = new Bundle();
+                bundle.putDouble(Constants.EXTRA_LAT,lat);
+                bundle.putDouble(Constants.EXTRA_LONG,lon);
+                intent.putExtra(Constants.EXTRA_BUNDLE_LOCATION,bundle);
                 startService(intent);
 //                getIntentService(lat, lon);
             }
@@ -298,12 +299,21 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Location location = (Location) adapterView.getItemAtPosition(i);
-                    Paper.book().write(Constants.LOCATION_LAT, location.lattitude);
-                    Paper.book().write(Constants.LOCATION_LON, location.longtitude);
+//                    Paper.book().write(Constants.LOCATION_LAT, location.lattitude);
+//                    Paper.book().write(Constants.LOCATION_LON, location.longtitude);
+
+                    Intent intent = new Intent(MainActivity.this, UpdateService.class);
+                    Bundle bundle = new Bundle();
+//                    bundle.putDouble(Constants.EXTRA_LAT,location.lattitude);
+//                    bundle.putDouble(Constants.EXTRA_LONG,location.longtitude);
+                    intent.putExtra(Constants.EXTRA_BUNDLE_LOCATION,bundle);
+                    startService(intent);
                 }
             });
         }
     };
+
+
 
 }
 

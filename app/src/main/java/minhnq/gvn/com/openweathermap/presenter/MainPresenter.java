@@ -3,10 +3,11 @@ package minhnq.gvn.com.openweathermap.presenter;
 
 import android.content.Context;
 
+import java.io.IOException;
 import java.util.List;
 
 import minhnq.gvn.com.openweathermap.constract.MainContract;
-import minhnq.gvn.com.openweathermap.database.LocationSQLiteUtils;
+import minhnq.gvn.com.openweathermap.database.LocationOpenHelper;
 import minhnq.gvn.com.openweathermap.model.Location;
 import minhnq.gvn.com.openweathermap.model.WeatherFiveDay;
 import minhnq.gvn.com.openweathermap.model.Weathers;
@@ -16,7 +17,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainPresenter extends BasePresenter<MainContract.IMainView> implements MainContract.IMainPresenter {
-
+    LocationOpenHelper dbhelper;
+    List<Location> list;
     public MainPresenter(MainContract.IMainView iMainView) {
         super(iMainView);
     }
@@ -54,11 +56,14 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
 
     @Override
     public void getAllLocation(Context context) {
-        LocationSQLiteUtils sqLiteUtils = new LocationSQLiteUtils(context);
-        sqLiteUtils.open();
-        sqLiteUtils.dumpData();
-        List<Location> list = sqLiteUtils.getAllLocation();
-        sqLiteUtils.close();
-//        view.onResponeAllLocation(list);
+
+        dbhelper = new LocationOpenHelper(context);
+        try {
+            dbhelper.createDataBase();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        list = dbhelper.getDetails();
+        view.onGetAllLocation(list);
     }
 }
