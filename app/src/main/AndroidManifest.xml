@@ -24,18 +24,20 @@
         </activity>
         <service android:name=".service.NotificationService"/>
         <service android:name=".service.UpdateService"/>
-        <receiver android:name=".receiver.UpdateTimeBroadcastReceiver"/>
+
         <receiver android:name=".receiver.AlarmReceiver">
             <intent-filter>
-                <action android:name="TEST"/>
+                <action android:name="minhnq.gvn.com.openweathermap.ACTION_WEATHER_NOTIFY"/>
             </intent-filter>
         </receiver>
 
         <receiver android:name=".widget.WeatherWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="minhnq.gvn.com.openweathermap.widget.CLOCK_WIDGET_UPDATE" />
+                <action android:name="minhnq.gvn.com.openweathermap.ACTION_WEATHER_ONEDAY_BY_NAME" />
                 <action android:name="minhnq.gvn.com.openweathermap.ACTION_WEATHER_ONEDAY"/>
+                <action android:name="minhnq.gvn.com.openweathermap.widget.CLOCK_WIDGET_UPDATE" />
+                <action android:name="widget.click"/>
             </intent-filter>
 
             <meta-data
@@ -43,6 +45,9 @@
                 android:resource="@xml/simple_app_widget" />
         </receiver>
         <service android:name=".service.UpdateService"/>
+        <service android:name=".service.UpdateByNameService"/>
+        <service android:name=".service.UpdateTimeService"/>
+        <service android:name=".service.NotificationService"/>
     </application>
 
 

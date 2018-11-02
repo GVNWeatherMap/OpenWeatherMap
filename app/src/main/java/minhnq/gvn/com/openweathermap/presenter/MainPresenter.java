@@ -2,6 +2,7 @@ package minhnq.gvn.com.openweathermap.presenter;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,7 +29,11 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
         APIUtils.getAPIService().getWeatherByLatLng(lat, lng, appid, unit).enqueue(new Callback<Weathers>() {
             @Override
             public void onResponse(Call<Weathers> call, Response<Weathers> response) {
-                view.onResponse(response.body());
+                if(response.isSuccessful()){
+                    view.onResponse(response.body());
+                }else {
+                    view.onResponseError("Not found!");
+                }
             }
 
             @Override
@@ -43,7 +48,11 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
         APIUtils.getAPIService().getWeatherFiveDayByLatLng(lat, lng, cnt, appid, unit).enqueue(new Callback<WeatherFiveDay>() {
             @Override
             public void onResponse(Call<WeatherFiveDay> call, Response<WeatherFiveDay> response) {
-                view.onResponseFiveDay(response.body());
+                if(response.isSuccessful()){
+                    view.onResponseFiveDay(response.body());
+                }else {
+                    view.onResponseError("Not found!");
+                }
             }
 
             @Override
@@ -66,4 +75,45 @@ public class MainPresenter extends BasePresenter<MainContract.IMainView> impleme
         list = dbhelper.getDetails();
         view.onGetAllLocation(list);
     }
+
+    @Override
+    public void getWeatherNowByName(String city, String appid, String unit) {
+        APIUtils.getAPIService().getWeatherByName(city,appid,unit).enqueue(new Callback<Weathers>() {
+            @Override
+            public void onResponse(Call<Weathers> call, Response<Weathers> response) {
+                    if(response.isSuccessful()){
+                        view.onResponceNowByName(response.body());
+                        Log.i("success", response.body().name);
+                    }else {
+                        view.onResponseError("Not found!");
+                    }
+            }
+
+            @Override
+            public void onFailure(Call<Weathers> call, Throwable t) {
+                Log.i("error", t.getMessage());
+            }
+        });
+        Log.i("error", "error");
+    }
+
+    @Override
+    public void getWeatherFiveDayByName(String city,int cnt, String appid, String unit) {
+        APIUtils.getAPIService().getWeatherFiveDayByName(city,cnt,appid,unit).enqueue(new Callback<WeatherFiveDay>() {
+            @Override
+            public void onResponse(Call<WeatherFiveDay> call, Response<WeatherFiveDay> response) {
+                if(response.isSuccessful()){
+                    view.onResponseFiveDayByName(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeatherFiveDay> call, Throwable t) {
+                Log.i("error", t.getMessage());
+
+            }
+        });
+    }
+
+
 }

@@ -45,6 +45,7 @@ public class SearchLocationAdapter extends ArrayAdapter<Location> {
                 view = inflater.inflate(resourceId, parent, false);
             }
             Location location = getItem(position);
+
             TextView name = view.findViewById(R.id.txv_row_item_city_name);
             name.setText(location.cityName);
         } catch (Exception e) {
